@@ -1,3 +1,4 @@
+from datetime import *
 from tkinter import *
 from tkinter import filedialog as fd
 from array import array
@@ -71,19 +72,104 @@ def makearray(textstr, hex_arr):
     result[8] = data1.decode('utf-8')
     return result
 
-def main():
+def writearrtogrid(parserresult):
+    add_left='0'
+    result_arr = ['','','','','','','','','','','','']
+    row_=0
+    for curw in parserresult:
+        row_=row_+1
+        height_pr=curw[1]
+        angleright=curw[2]
+        addleft='error'
+        addright='error'
+        if angleright == "45":
+            addleft=height_pr
+            addright = height_pr
+        if angleright == "90":
+            addleft='0'
+            addright = '0'
+        if addleft=='error' or addright=='error':
+            realsize='error'
+        else:
+            realsize=str(int(curw[0]) - int(addleft) - int(addright))
+
+        # bar_length
+        lbl = Label(frame_tbl, width="10", text=str(curw[0]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=0, padx=1, pady=1)
+        # angle_left_grad/#angle_right_grad
+        lbl = Label(frame_tbl, width="10", text=str(curw[2]+"/"+curw[3]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=1, padx=1, pady=1)
+        # height_profile
+        lbl = Label(frame_tbl, width="10", text=str(curw[1]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=2, padx=1, pady=1)
+        # add_right_left
+        lbl = Label(frame_tbl, width="10", text=str(addright+"/"+addleft), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=3, padx=1, pady=1)
+        # realsize
+        lbl = Label(frame_tbl, width="10", text=str(realsize), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=4, padx=1, pady=1)
+        # article_profile-qty_bar
+        lbl = Label(frame_tbl, width="10", text=str(curw[8] + "-" + curw[4]  ), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=5, padx=1, pady=1)
+        # barcode
+        lbl = Label(frame_tbl, width="10", text=str(curw[6]+"-"+curw[7]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=6, padx=1, pady=1)
+        # bar_color
+        lbl = Label(frame_tbl, width="10", text=str(curw[5]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
+        lbl.grid(row=row_, column=7, padx=1, pady=1)
+
+        result_arr[0] = curw[0]#bar_length
+        result_arr[1] = curw[2]#angle_left_grad
+        result_arr[2] = curw[3]#angle_right_grad
+        result_arr[3] = height_pr#height_profile
+        result_arr[4] = addleft
+        result_arr[5] = addright
+        result_arr[6] = realsize
+        result_arr[7] = curw[8]#article_profile
+        result_arr[8] = curw[4]#qty_bar
+        result_arr[9] = curw[6]#bar_code
+        result_arr[10] = curw[7]#bar_number
+        result_arr[11] = curw[5]#bar_color
+
+
+
+def importdata():
+
     hex_arr=[]
     str_text = ''
     parserresult=[]
 
     filenamexml = fd.askopenfilename(filetypes=(("PRG files", "*.prg"), ("all files", " *.*")))
-    with open(filenamexml, "rb") as f:
-        # Read the whole file at once
-        for i in f.read():
-            a=ord(chr(i))
-            a1="{:02x}".format(a)
-            hex_arr.append(a1)
 
+    if filenamexml:
+        try:
+            lbl_message["text"] = u"Подождите... Идет импортирование данных"
+            lbl_message["bg"] = "lightgreen"
+            lbl_message["width"] = "100"
+            lbl_message["height"] = "3"
+
+            with open(filenamexml, "rb") as f:
+                # Read the whole file at once
+                for i in f.read():
+                    a = ord(chr(i))
+                    a1 = "{:02x}".format(a)
+                    hex_arr.append(a1)
+        except:
+            lbl_message["text"] = u"Не могу открыть файл"
+            lbl_message["bg"] = "red"
+            lbl_message["width"] = "100"
+            lbl_message["height"] = "3"
+            return
+    else:
+        lbl_message["text"] = u"Не могу открыть файл"
+        lbl_message["bg"] = "red"
+        lbl_message["width"] = "100"
+        lbl_message["height"] = "3"
+        return
+    lbl_message["text"] = u"Данные загружены"
+    lbl_message["bg"] = "lightgreen"
+    lbl_message["width"] = "100"
+    lbl_message["height"] = "3"
 
     for cur in range(0, len(hex_arr), 54):
         start=cur
@@ -94,46 +180,49 @@ def main():
         res = makearray(str_text, hex_arr[start:end])
         if res != 0:
             parserresult.append(res)
-    fw = open('text.csv', 'w')
-    result_arr = ['bar_length', 'angle_left_grad', 'angle_right_grad', 'height_profile', 'bar_code', 'bar_number', 'article_profile', 'qty_bar', 'qty_cut', 'marker_end_cut', 'bar_color', 'add_left_head', 'add_right_head', 'real_size']
-    result_str = ";".join(result_arr)
-    add_left='0'
-    fw.write(result_str + '\n')
-    for curw in parserresult:
-        result_arr[0] = curw[0]#bar_length
-        result_arr[1] = curw[2]#angle_left_grad
-        result_arr[2] = curw[3]#angle_right_grad
-        result_arr[3] = curw[1]#height_profile
-        result_arr[4] = curw[6]#bar_code
-        result_arr[5] = curw[7]#bar_number
-        result_arr[6] = curw[8]#article_profile
-        result_arr[7] = curw[4]#qty_bar
-        result_arr[8] = '0'#qty_cut
-        result_arr[9] = '0'#marker_end_cut
-        result_arr[10] = curw[5]#bar_color
-        addleft='error'
-        if result_arr[1] == "45":
-            addleft=result_arr[3]
-        if result_arr[1] == "90":
-            addleft='0'
-        addright = 'error'
-        if result_arr[1] == "45":
-            addright = result_arr[3]
-        if result_arr[1] == "90":
-            addright = '0'
-
-        result_arr[11] = addleft
-        result_arr[12] = addright
-
-        if addleft=='error' or addright=='error':
-            realsize='error'
-        else:
-            realsize=str(int(result_arr[0]) - int(addleft) - int(addright))
-        result_arr[13] = realsize
-
-        curwstr=";".join(result_arr)
-        print(curwstr)
-        fw.write(curwstr+'\n')
 
 
-main()
+    writearrtogrid(parserresult)
+
+
+root = Tk()
+lbl_message = Label(root, text="", font=("Tahoma", 12), width="0", height="0", bg="white")
+lbl_message.grid(row=1, columnspan=4)
+lbl_message["text"] = u"Подключите файл для разбора"
+lbl_message["bg"] = "lightgreen"
+lbl_message["width"] = "100"
+lbl_message["height"] = "3"
+
+but_import = Button(root,
+           text= u"Импорт данных из файла",
+           width=30, height=1,
+           font=("Tahoma", 12),
+           bg="orange", command=importdata
+                  )
+but_import.grid(row=2,column=2, padx=5, pady=30)
+
+mycolor1 = '#eeeeee'
+
+frame_tbl = Frame(root, bg=mycolor1, borderwidth=25)
+frame_tbl.grid(row=3, column=0, columnspan="4")
+lbl = Label(frame_tbl, width="10", text="Длина", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=0, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Углы", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=1, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Высота", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=2, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Добавочные", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=3, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Реал. размер", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=4, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Артикуль", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=5, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Баркод", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=6, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Цвет", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=7, padx=1, pady=1)
+
+root.title(u"Раскрой пилы")
+root.geometry('1024x768')
+root.configure(bg="grey")
+root.mainloop()
