@@ -1,4 +1,3 @@
-
 import argparse
 from pyModbusTCP.server import ModbusServer
 
