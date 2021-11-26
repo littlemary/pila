@@ -1,4 +1,3 @@
-from datetime import *
 from tkinter import *
 from tkinter import filedialog as fd
 from array import array
@@ -71,8 +70,51 @@ def makearray(textstr, hex_arr):
     data1 = bytes.fromhex(data.decode("ascii"))
     result[8] = data1.decode('utf-8')
     return result
+
+def writeonerow(row_, curw, color_):
+        # bar_length
+        lbl = Label(frame_tbl, width="10", text=str(curw[0]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=0, padx=1, pady=1)
+        # angle_left_grad/#angle_right_grad
+        lbl = Label(frame_tbl, width="10", text=str(curw[1] + "/" + curw[2]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=1, padx=1, pady=1)
+        # height_profile
+        lbl = Label(frame_tbl, width="10", text=str(curw[3]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=2, padx=1, pady=1)
+        # add_right_left
+        lbl = Label(frame_tbl, width="10", text=str(curw[4] + "/" + curw[5]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=3, padx=1, pady=1)
+        # realsize
+        lbl = Label(frame_tbl, width="10", text=str(curw[6]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=4, padx=1, pady=1)
+        # article_profile-qty_bar
+        lbl = Label(frame_tbl, width="10", text=str(curw[7] + "-" + curw[8]), font=("Tahoma", 10), padx=10, pady=5,
+                    bg=color_)
+        lbl.grid(row=row_, column=5, padx=1, pady=1)
+        # barcode
+        lbl = Label(frame_tbl, width="10", text=str(curw[9] + "-" + curw[10]), font=("Tahoma", 10), padx=10, pady=5,
+                    bg=color_)
+        lbl.grid(row=row_, column=6, padx=1, pady=1)
+        # bar_color
+        lbl = Label(frame_tbl, width="10", text=str(curw[11]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=7, padx=1, pady=1)
+        lbl = Label(frame_tbl, width="10", text=str(curw[12]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=8, padx=1, pady=1)
+        lbl = Label(frame_tbl, width="10", text=str(curw[13]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=9, padx=1, pady=1)
+
+
+
 def startdata():
-    return
+    row_ = 0
+    for curw in result_arr:
+        row_=row_+1
+        curw[12]='1'
+        curw[13]='1'
+        writeonerow(row_, curw, "green")
+
+
+
 def updatescroll(i=1):
     canvas.create_window((0, 0), window=frame_tbl, anchor=NW)
 
@@ -80,18 +122,17 @@ def updatescroll(i=1):
     bbox = canvas.bbox(ALL)  # Get bounding box of canvas with Buttons.
     # print('canvas.bbox(tk.ALL): {}'.format(bbox))
     LABEL_BG = "#ccc"  # Light grey.
-    ROWS, COLS = i, 8  # Size of grid.
-    ROWS_DISP = 7  # Number of rows to display.
-    COLS_DISP = 8  # Number of columns to display.
+    ROWS, COLS = i, 10  # Size of grid.
+    ROWS_DISP = 12  # Number of rows to display.
+    COLS_DISP = 10  # Number of columns to display.
     # Define the scrollable region as entire canvas with only the desired
     # number of rows and columns displayed.
     w, h = bbox[2] - bbox[1], bbox[3] - bbox[1]
     dw, dh = int((w / COLS) * COLS_DISP), int((h / ROWS) * ROWS_DISP)
     canvas.configure(scrollregion=bbox, width=dw, height=dh)
 
-def writearrtogrid(parserresult):
+def writearrtogrid():
     add_left='0'
-
     row_=0
     for curw in parserresult:
         row_=row_+1
@@ -109,50 +150,28 @@ def writearrtogrid(parserresult):
             realsize='error'
         else:
             realsize=str(int(curw[0]) - int(addleft) - int(addright))
-
-        # bar_length
-        lbl = Label(frame_tbl, width="10", text=str(curw[0]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=0, padx=1, pady=1)
-        # angle_left_grad/#angle_right_grad
-        lbl = Label(frame_tbl, width="10", text=str(curw[2]+"/"+curw[3]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=1, padx=1, pady=1)
-        # height_profile
-        lbl = Label(frame_tbl, width="10", text=str(curw[1]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=2, padx=1, pady=1)
-        # add_right_left
-        lbl = Label(frame_tbl, width="10", text=str(addright+"/"+addleft), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=3, padx=1, pady=1)
-        # realsize
-        lbl = Label(frame_tbl, width="10", text=str(realsize), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=4, padx=1, pady=1)
-        # article_profile-qty_bar
-        lbl = Label(frame_tbl, width="10", text=str(curw[8] + "-" + curw[4]  ), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=5, padx=1, pady=1)
-        # barcode
-        lbl = Label(frame_tbl, width="10", text=str(curw[6]+"-"+curw[7]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=6, padx=1, pady=1)
-        # bar_color
-        lbl = Label(frame_tbl, width="10", text=str(curw[5]), font=("Tahoma", 10), padx=10, pady=5, bg="white")
-        lbl.grid(row=row_, column=7, padx=1, pady=1)
-
-        result_arr[0] = curw[0]#bar_length
-        result_arr[1] = curw[2]#angle_left_grad
-        result_arr[2] = curw[3]#angle_right_grad
-        result_arr[3] = height_pr#height_profile
-        result_arr[4] = addleft#addleft
-        result_arr[5] = addright#addright
-        result_arr[6] = realsize#realsize
-        result_arr[7] = curw[8]#article_profile
-        result_arr[8] = curw[4]#qty_bar
-        result_arr[9] = curw[6]#bar_code
-        result_arr[10] = curw[7]#bar_number
-        result_arr[11] = curw[5]#bar_color
-    updatescroll(len(parserresult))
+        result_row=[]
+        result_row.append(curw[0])#bar_length
+        result_row.append(curw[2])#angle_left_grad
+        result_row.append(curw[3])#angle_right_grad
+        result_row.append(height_pr)#height_profile
+        result_row.append(addleft)#addleft
+        result_row.append(addright)#addright
+        result_row.append(realsize)#realsize
+        result_row.append(curw[8])#article_profile
+        result_row.append(curw[4])#qty_bar
+        result_row.append(curw[6])#bar_code
+        result_row.append(curw[7])#bar_number
+        result_row.append(curw[5])#bar_color
+        result_row.append('')#qty_cur
+        result_row.append('')#marker_end_cut
+        result_arr.append(result_row)
+        writeonerow(row_, result_row, "white")
+    updatescroll(len(result_arr))
 
 
 
 def importdata():
-    updatescroll(1)
     hex_arr=[]
     str_text = ''
 
@@ -199,13 +218,14 @@ def importdata():
         if res != 0:
             parserresult.append(res)
 
-
-    writearrtogrid(parserresult)
+    result_arr = []
+    writearrtogrid()
 
 
 root = Tk()
 parserresult = []
-result_arr = ['','','','','','','','','','','','']
+result_arr = []
+result_row = []
 lbl_message = Label(root, text="", font=("Tahoma", 12), width="0", height="0", bg="white")
 lbl_message.grid(row=1, columnspan=4)
 lbl_message["text"] = u"Подключите файл для разбора"
@@ -268,7 +288,11 @@ lbl = Label(frame_tbl, width="10", text="Баркод", font=("Tahoma", 10), pad
 lbl.grid(row=0, column=6, padx=1, pady=1)
 lbl = Label(frame_tbl, width="10", text="Цвет", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
 lbl.grid(row=0, column=7, padx=1, pady=1)
-updatescroll(1)
+lbl = Label(frame_tbl, width="10", text="Кол-во резов", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=8, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=0, column=9, padx=1, pady=1)
+
 
 root.title(u"Раскрой пилы")
 root.geometry('1024x768')
