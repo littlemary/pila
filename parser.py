@@ -122,9 +122,9 @@ def writearrtogrid(parserresult):
         result_arr[1] = curw[2]#angle_left_grad
         result_arr[2] = curw[3]#angle_right_grad
         result_arr[3] = height_pr#height_profile
-        result_arr[4] = addleft
-        result_arr[5] = addright
-        result_arr[6] = realsize
+        result_arr[4] = addleft#addleft
+        result_arr[5] = addright#addright
+        result_arr[6] = realsize#realsize
         result_arr[7] = curw[8]#article_profile
         result_arr[8] = curw[4]#qty_bar
         result_arr[9] = curw[6]#bar_code
