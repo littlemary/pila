@@ -71,10 +71,27 @@ def makearray(textstr, hex_arr):
     data1 = bytes.fromhex(data.decode("ascii"))
     result[8] = data1.decode('utf-8')
     return result
+def startdata():
+    return
+def updatescroll(i=1):
+    canvas.create_window((0, 0), window=frame_tbl, anchor=NW)
+
+    frame_tbl.update_idletasks()  # Needed to make bbox info available.
+    bbox = canvas.bbox(ALL)  # Get bounding box of canvas with Buttons.
+    # print('canvas.bbox(tk.ALL): {}'.format(bbox))
+    LABEL_BG = "#ccc"  # Light grey.
+    ROWS, COLS = i, 8  # Size of grid.
+    ROWS_DISP = 7  # Number of rows to display.
+    COLS_DISP = 8  # Number of columns to display.
+    # Define the scrollable region as entire canvas with only the desired
+    # number of rows and columns displayed.
+    w, h = bbox[2] - bbox[1], bbox[3] - bbox[1]
+    dw, dh = int((w / COLS) * COLS_DISP), int((h / ROWS) * ROWS_DISP)
+    canvas.configure(scrollregion=bbox, width=dw, height=dh)
 
 def writearrtogrid(parserresult):
     add_left='0'
-    result_arr = ['','','','','','','','','','','','']
+
     row_=0
     for curw in parserresult:
         row_=row_+1
@@ -130,14 +147,15 @@ def writearrtogrid(parserresult):
         result_arr[9] = curw[6]#bar_code
         result_arr[10] = curw[7]#bar_number
         result_arr[11] = curw[5]#bar_color
+    updatescroll(len(parserresult))
 
 
 
 def importdata():
-
+    updatescroll(1)
     hex_arr=[]
     str_text = ''
-    parserresult=[]
+
 
     filenamexml = fd.askopenfilename(filetypes=(("PRG files", "*.prg"), ("all files", " *.*")))
 
@@ -186,6 +204,8 @@ def importdata():
 
 
 root = Tk()
+parserresult = []
+result_arr = ['','','','','','','','','','','','']
 lbl_message = Label(root, text="", font=("Tahoma", 12), width="0", height="0", bg="white")
 lbl_message.grid(row=1, columnspan=4)
 lbl_message["text"] = u"Подключите файл для разбора"
@@ -199,12 +219,39 @@ but_import = Button(root,
            font=("Tahoma", 12),
            bg="orange", command=importdata
                   )
-but_import.grid(row=2,column=2, padx=5, pady=30)
+but_import.grid(row=2,column=1, padx=5, pady=30)
+
+but_start = Button(root,
+           text= u"СТАРТ",
+           width=30, height=1,
+           font=("Tahoma", 12),
+           bg="green", command=startdata
+                  )
+but_start.grid(row=2,column=2, padx=5, pady=30)
 
 mycolor1 = '#eeeeee'
 
-frame_tbl = Frame(root, bg=mycolor1, borderwidth=25)
-frame_tbl.grid(row=3, column=0, columnspan="4")
+frame_ = Frame(root, bg=mycolor1, borderwidth=25)
+frame_.grid(row=3, column=0, columnspan="4")
+frame2_c = Frame(frame_)
+frame2_c.grid(row=8, columnspan="3", sticky=NW)
+# Add a canvas in that frame.
+canvas = Canvas(frame2_c, bg="grey")
+canvas.grid(row=0, column=0)
+
+# Create a vertical scrollbar linked to the canvas.
+vsbar = Scrollbar(frame2_c, orient=VERTICAL, command=canvas.yview)
+vsbar.grid(row=0, column=1, sticky=NS)
+canvas.configure(yscrollcommand=vsbar.set)
+
+# Create a horizontal scrollbar linked to the canvas.
+hsbar = Scrollbar(frame2_c, orient=HORIZONTAL, command=canvas.xview)
+hsbar.grid(row=1, column=0, sticky=EW)
+canvas.configure(xscrollcommand=hsbar.set)
+
+# Create a frame on the canvas to contain the buttons.
+frame_tbl = Frame(canvas, bg="grey", bd=2)
+
 lbl = Label(frame_tbl, width="10", text="Длина", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
 lbl.grid(row=0, column=0, padx=1, pady=1)
 lbl = Label(frame_tbl, width="10", text="Углы", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
@@ -221,6 +268,7 @@ lbl = Label(frame_tbl, width="10", text="Баркод", font=("Tahoma", 10), pad
 lbl.grid(row=0, column=6, padx=1, pady=1)
 lbl = Label(frame_tbl, width="10", text="Цвет", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
 lbl.grid(row=0, column=7, padx=1, pady=1)
+updatescroll(1)
 
 root.title(u"Раскрой пилы")
 root.geometry('1024x768')
