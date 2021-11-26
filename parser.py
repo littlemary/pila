@@ -111,7 +111,12 @@ def startdata():
         row_=row_+1
         curw[12]='1'
         curw[13]='1'
-        writeonerow(row_, curw, "green")
+        writeonerow(row_, curw, "lightblue")
+    updatescroll(len(result_arr))
+    lbl_message["text"] = u"Порезка окончена"
+    lbl_message["bg"] = "orange"
+    lbl_message["width"] = "100"
+    lbl_message["height"] = "3"
 
 
 
@@ -122,6 +127,7 @@ def updatescroll(i=1):
     bbox = canvas.bbox(ALL)  # Get bounding box of canvas with Buttons.
     # print('canvas.bbox(tk.ALL): {}'.format(bbox))
     LABEL_BG = "#ccc"  # Light grey.
+    i+=2
     ROWS, COLS = i, 10  # Size of grid.
     ROWS_DISP = 12  # Number of rows to display.
     COLS_DISP = 10  # Number of columns to display.
@@ -293,7 +299,7 @@ lbl.grid(row=0, column=8, padx=1, pady=1)
 lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
 lbl.grid(row=0, column=9, padx=1, pady=1)
 
-
+updatescroll(1)
 root.title(u"Раскрой пилы")
 root.geometry('1024x768')
 root.configure(bg="grey")
