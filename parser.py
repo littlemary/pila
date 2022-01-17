@@ -1,75 +1,17 @@
 from tkinter import *
 from tkinter import filedialog as fd
+
+from parser_functions import convert_base
+from parser_functions import makearray
+
+from modbus_function import modbus_start_connection
+from modbus_function import modbus_write_array
+
 from array import array
 from sys import byteorder as system_endian
 from os import stat
 
-def convert_base(num, to_base=10, from_base=10):
-    # first convert to decimal number
-    n = int(num, from_base) if isinstance(num, str) else num
-    # now convert decimal to 'to_base' base
-    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    res = ""
-    while n > 0:
-        n,m = divmod(n, to_base)
-        res += alphabet[m]
-    return res[::-1]
 
-def makearray(textstr, hex_arr):
-    result=['', '', '', '', '', '', '', '', '']
-    if (len(textstr)<108):
-        return 0
-    #bar_length
-    mystr = hex_arr[5] + hex_arr[6]
-    mystrdecode = convert_base(mystr, 10, 16)
-    #mystrdecode = mystrdecode[:-1]
-    result[0] = mystrdecode
-
-    #angle_left_grad
-    mystr = hex_arr[8] + hex_arr[9]
-    mystrdecode = convert_base(mystr, 10, 16)
-    result[1] = mystrdecode
-
-    #angle_right_grad
-    mystr = hex_arr[10] + hex_arr[11]
-    mystrdecode = convert_base(mystr, 10, 16)
-    mystrdecode = mystrdecode[:-1]
-    result[2] = mystrdecode
-
-    #height_profile
-    mystr = hex_arr[12] + hex_arr[13]
-    mystrdecode = convert_base(mystr, 10, 16)
-    mystrdecode = mystrdecode[:-1]
-    result[3] = mystrdecode
-
-    # qty_bar
-    mystr=hex_arr[15]
-    mystrdecode = convert_base(mystr, 10, 18)
-    result[4] = mystrdecode
-
-    # bar_color
-    mystrdecode = textstr[52:68]
-    data = bytes(mystrdecode, "utf-8")
-    data1 = bytes.fromhex(data.decode("ascii"))
-    result[5] = data1.decode('utf-8')
-
-    # bar_code
-    mystrdecode = textstr[68:80]
-    data = bytes(mystrdecode, "utf-8")
-    data1 = bytes.fromhex(data.decode("ascii"))
-    result[6] = data1.decode('utf-8')
-
-    # bar_number
-    mystrdecode = textstr[82:84]
-    data = bytes(mystrdecode, "utf-8")
-    data1 = bytes.fromhex(data.decode("ascii"))
-    result[7] = data1.decode('utf-8')
-
-    mystrdecode = textstr[84:96]
-    data = bytes(mystrdecode, "utf-8")
-    data1 = bytes.fromhex(data.decode("ascii"))
-    result[8] = data1.decode('utf-8')
-    return result
 
 def writeonerow(row_, curw, color_):
         # bar_length
@@ -106,7 +48,28 @@ def writeonerow(row_, curw, color_):
 
 
 def startdata():
-    row_ = 0
+    if len(result_arr) == 0:
+        lbl_message["text"] = u"Нет данных для отправки\nПодключите файл для разбора"
+        lbl_message["bg"] = "red"
+        lbl_message["width"] = "100"
+        lbl_message["height"] = "3"
+        return 0
+    connect = modbus_start_connection()
+    if connect == 0:
+        lbl_message["text"] = u"Ошибка соединения с ПЛК"
+        lbl_message["bg"] = "red"
+        lbl_message["width"] = "100"
+        lbl_message["height"] = "3"
+        return 0
+    write_modbus = modbus_write_array(result_arr)
+    #print(type(write_modbus))
+    if isinstance(write_modbus, str):
+            lbl_message["text"] = write_modbus
+            lbl_message["bg"] = "red"
+            lbl_message["width"] = "100"
+            lbl_message["height"] = "3"
+            return 0
+    row_ = 1
     for curw in result_arr:
         row_=row_+1
         curw[12]='1'
@@ -127,7 +90,7 @@ def updatescroll(i=1):
     bbox = canvas.bbox(ALL)  # Get bounding box of canvas with Buttons.
     # print('canvas.bbox(tk.ALL): {}'.format(bbox))
     LABEL_BG = "#ccc"  # Light grey.
-    i+=2
+    i += 2
     ROWS, COLS = i, 10  # Size of grid.
     ROWS_DISP = 12  # Number of rows to display.
     COLS_DISP = 10  # Number of columns to display.
@@ -138,20 +101,24 @@ def updatescroll(i=1):
     canvas.configure(scrollregion=bbox, width=dw, height=dh)
 
 def writearrtogrid():
-    add_left='0'
-    row_=0
+    add_left = '0'
+    row_ = 1
     for curw in parserresult:
-        row_=row_+1
-        height_pr=curw[1]
-        angleright=curw[2]
-        addleft='error'
-        addright='error'
+        row_ += 1
+        height_pr = curw[1]
+        angleleft = curw[2]
+        angleright=curw[3]
+        addleft = 'error'
+        addright = 'error'
         if angleright == "45":
-            addleft=height_pr
             addright = height_pr
         if angleright == "90":
-            addleft='0'
             addright = '0'
+        if angleleft == "45":
+            addleft = height_pr
+        if angleleft == "90":
+            addleft = '0'
+
         if addleft=='error' or addright=='error':
             realsize='error'
         else:
@@ -240,15 +207,15 @@ lbl_message["width"] = "100"
 lbl_message["height"] = "3"
 
 but_import = Button(root,
-           text= u"Импорт данных из файла",
-           width=30, height=1,
+           text=u"Импорт данных из файла",
+           width = 30, height = 1,
            font=("Tahoma", 12),
            bg="orange", command=importdata
                   )
 but_import.grid(row=2,column=1, padx=5, pady=30)
 
 but_start = Button(root,
-           text= u"СТАРТ",
+           text= u"Послать данные на ПЛК",
            width=30, height=1,
            font=("Tahoma", 12),
            bg="green", command=startdata
@@ -298,6 +265,27 @@ lbl = Label(frame_tbl, width="10", text="Кол-во резов", font=("Tahoma"
 lbl.grid(row=0, column=8, padx=1, pady=1)
 lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
 lbl.grid(row=0, column=9, padx=1, pady=1)
+
+lbl = Label(frame_tbl, width="10", text="bar_length", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=0, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="angle_left_grad\nangle_right_grad", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=1, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="height_profile", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=2, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Вычисляемое", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=3, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="real_size", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=4, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="article_profile", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=5, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="bar_code\n-bar_number", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=6, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="bar_color", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=7, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Кол-во резов", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=8, padx=1, pady=1)
+lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+lbl.grid(row=1, column=9, padx=1, pady=1)
 
 updatescroll(1)
 root.title(u"Раскрой пилы")
