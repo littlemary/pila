@@ -13,15 +13,15 @@ def check_value(c, num, step):
     # step 3 проверяем значение ready_take_sheet. должно быть 1
     res = c.read_coils(num)
     # заглушка. Записали в ПЛК нужную переменную.
-    return_flag = c.write_single_coil(num, True)
+    #return_flag = c.write_single_coil(num, True)
     # / заглушка. Записали в ПЛК нужную переменную.
     kol = 0
     while res == False:
         kol += 1
         res = c.read_coils(num)
-        if kol > 30:
-            str_res='Проблема со связью. Шаг '+step
-            return str_res
+        #if kol > 30:
+            #str_res='Проблема со связью. Шаг '+step
+            #return str_res
     return 1
 def modbus_write_array(result_arr):
 #step 1 записываем в 0 регистр все 0
@@ -30,7 +30,8 @@ def modbus_write_array(result_arr):
     return_flag = c.write_multiple_coils(starting_address, output_values)
     if not return_flag:
         return 'Проблема со связью. Шаг 1'
-
+    #clear_array ставим в True
+    return_flag = c.write_single_coil(6, True)
 #step 2 command_write_sheet записываем  1
     return_flag = c.write_single_coil(0, True)
     if not return_flag:
@@ -97,11 +98,13 @@ def modbus_write_array(result_arr):
         c.write_single_register(output_address, output_value)
         # bar_code
         output_address = 6
-        output_value = int(cur[9])
+        #output_value = int(cur[9])
+        output_value = 0
         c.write_single_register(output_address, output_value)
         # article_profile
         output_address = 8
-        output_value = int(cur[7])
+        #output_value = int(cur[7])
+        output_value = 0
         c.write_single_register(output_address, output_value)
         # qty_bar
         output_address = 10
@@ -131,5 +134,12 @@ def modbus_write_array(result_arr):
        return res
     c.write_single_coil(21, True)
     c.write_single_coil(0, True)
+
+#шаг 15 все сбросить  в 0
+    starting_address = 0x00
+    output_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    return_flag = c.write_multiple_coils(starting_address, output_values)
+    if not return_flag:
+        return 'Проблема со связью. Шаг 15'
 
     return 1

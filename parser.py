@@ -101,6 +101,7 @@ def updatescroll(i=1):
     canvas.configure(scrollregion=bbox, width=dw, height=dh)
 
 def writearrtogrid():
+    result_arr.clear()
     add_left = '0'
     row_ = 1
     for curw in parserresult:
@@ -147,8 +148,9 @@ def writearrtogrid():
 def importdata():
     hex_arr=[]
     str_text = ''
-
-
+    hex_arr.clear()
+    result_arr.clear()
+    parserresult.clear()
     filenamexml = fd.askopenfilename(filetypes=(("PRG files", "*.prg"), ("all files", " *.*")))
 
     if filenamexml:
@@ -191,12 +193,13 @@ def importdata():
         if res != 0:
             parserresult.append(res)
 
-    result_arr = []
+
     writearrtogrid()
 
 
 root = Tk()
 parserresult = []
+parserresult.clear()
 result_arr = []
 result_row = []
 lbl_message = Label(root, text="", font=("Tahoma", 12), width="0", height="0", bg="white")

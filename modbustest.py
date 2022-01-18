@@ -1,3 +1,5 @@
+import base64
+
 from pyModbusTCP.client import ModbusClient
 from pyModbusTCP.utils import encode_ieee, long_list_to_word
 
@@ -8,6 +10,7 @@ if not c.is_open():
     if c.is_open():
        print("connect ok")
 if c.is_open():
-
-    c.write_single_register(3,3)
-
+    reg_val = 0x1e0f3
+    res = [243, 224]
+    c.wr
+    c.write_multiple_registers(6, res)
