@@ -1,3 +1,6 @@
+import random
+from time import sleep
+
 from tkinter import *
 from tkinter import filedialog as fd
 
@@ -58,6 +61,45 @@ def clear_frame():
     lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
     lbl.grid(row=1, column=9, padx=1, pady=1)
 
+def rewrite_table():
+    clear_frame()
+    row_=1
+    for curw in result_arr:
+        row_=row_+1
+        if curw[12]=='1':
+            color_="lightblue"
+        else:
+            color_ = "white"
+        writeonerow(row_, curw, color_)
+
+def get_changes_modbus():
+    endrecords = len(result_arr)
+    return random.randint(1,endrecords)
+
+
+def check_changes(record_number_complete=0):
+     kolrecords = len(result_arr)
+     program_end=1
+     for cur in result_arr:
+         if cur[12]=='':
+             program_end=0 # программа еще не закончена. порезаны не все записи
+     if program_end==1:
+         lbl_message["text"] = u"Программа завершена"
+         lbl_message["bg"] = "green"
+         lbl_message["width"] = "100"
+         lbl_message["height"] = "3"
+         return 0
+     new_check = get_changes_modbus()
+     if record_number_complete != new_check:
+         record_number_complete = new_check
+         for curw in result_arr:
+             qty_num_ = int(curw[8])
+             if qty_num_ == record_number_complete:
+                 curw[12] = '1'
+         rewrite_table()
+
+     check_changes(record_number_complete)
+
 def writeonerow(row_, curw, color_):
         # bar_length
         lbl = Label(frame_tbl, width="10", text=str(curw[8]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
@@ -93,6 +135,8 @@ def writeonerow(row_, curw, color_):
 
 
 def startdata():
+#    check_changes(0)
+#    return 0
     if len(result_arr) == 0:
         lbl_message["text"] = u"Нет данных для отправки\nПодключите файл для разбора"
         lbl_message["bg"] = "red"
