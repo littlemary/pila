@@ -10,7 +10,5 @@ if not c.is_open():
     if c.is_open():
        print("connect ok")
 if c.is_open():
-    reg_val = 0x1e0f3
-    res = [243, 224]
-    c.wr
-    c.write_multiple_registers(6, res)
+    return_flag = c.write_single_coil(22, True)
+    if ()

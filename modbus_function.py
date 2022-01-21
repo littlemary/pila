@@ -31,7 +31,7 @@ def modbus_write_array(result_arr):
     if not return_flag:
         return 'Проблема со связью. Шаг 1'
     #clear_array ставим в True
-    return_flag = c.write_single_coil(6, True)
+    return_flag = c.write_single_coil(22, True)
 #step 2 command_write_sheet записываем  1
     return_flag = c.write_single_coil(0, True)
     if not return_flag:

@@ -11,38 +11,83 @@ from array import array
 from sys import byteorder as system_endian
 from os import stat
 
+def clear_frame():
+    for widget in frame_tbl.winfo_children():
+        widget.destroy()
+    lbl = Label(frame_tbl, width="10", text="Номер", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=0, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Длина", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=1, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Углы", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=2, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Высота", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=3, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Добавочные", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=4, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Реал. размер", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=5, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Артикуль", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=6, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Баркод", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=7, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Цвет", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=8, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=0, column=9, padx=1, pady=1)
 
+    lbl = Label(frame_tbl, width="10", text="qty_bar", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=0, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="bar_length", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=1, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="angle_left_grad\nangle_right_grad", font=("Tahoma", 10), padx=10, pady=5,
+                bg="lightgreen")
+    lbl.grid(row=1, column=2, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="height_profile", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=3, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Вычисляемое", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=4, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="real_size", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=5, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="article_profile", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=6, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="bar_code\n-bar_number", font=("Tahoma", 10), padx=10, pady=5,
+                bg="lightgreen")
+    lbl.grid(row=1, column=7, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="bar_color", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=8, padx=1, pady=1)
+    lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
+    lbl.grid(row=1, column=9, padx=1, pady=1)
 
 def writeonerow(row_, curw, color_):
         # bar_length
-        lbl = Label(frame_tbl, width="10", text=str(curw[0]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl = Label(frame_tbl, width="10", text=str(curw[8]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
         lbl.grid(row=row_, column=0, padx=1, pady=1)
+        lbl = Label(frame_tbl, width="10", text=str(curw[0]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl.grid(row=row_, column=1, padx=1, pady=1)
         # angle_left_grad/#angle_right_grad
         lbl = Label(frame_tbl, width="10", text=str(curw[1] + "/" + curw[2]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
-        lbl.grid(row=row_, column=1, padx=1, pady=1)
+        lbl.grid(row=row_, column=2, padx=1, pady=1)
         # height_profile
         lbl = Label(frame_tbl, width="10", text=str(curw[3]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
-        lbl.grid(row=row_, column=2, padx=1, pady=1)
+        lbl.grid(row=row_, column=3, padx=1, pady=1)
         # add_right_left
         lbl = Label(frame_tbl, width="10", text=str(curw[4] + "/" + curw[5]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
-        lbl.grid(row=row_, column=3, padx=1, pady=1)
+        lbl.grid(row=row_, column=4, padx=1, pady=1)
         # realsize
         lbl = Label(frame_tbl, width="10", text=str(curw[6]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
-        lbl.grid(row=row_, column=4, padx=1, pady=1)
-        # article_profile-qty_bar
-        lbl = Label(frame_tbl, width="10", text=str(curw[7] + "-" + curw[8]), font=("Tahoma", 10), padx=10, pady=5,
-                    bg=color_)
         lbl.grid(row=row_, column=5, padx=1, pady=1)
+        # article_profile
+        lbl = Label(frame_tbl, width="10", text=str(curw[7]), font=("Tahoma", 10), padx=10, pady=5,
+                    bg=color_)
+        lbl.grid(row=row_, column=6, padx=1, pady=1)
         # barcode
         lbl = Label(frame_tbl, width="10", text=str(curw[9] + "-" + curw[10]), font=("Tahoma", 10), padx=10, pady=5,
                     bg=color_)
-        lbl.grid(row=row_, column=6, padx=1, pady=1)
+        lbl.grid(row=row_, column=7, padx=1, pady=1)
         # bar_color
         lbl = Label(frame_tbl, width="10", text=str(curw[11]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
-        lbl.grid(row=row_, column=7, padx=1, pady=1)
-        lbl = Label(frame_tbl, width="10", text=str(curw[12]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
         lbl.grid(row=row_, column=8, padx=1, pady=1)
-        lbl = Label(frame_tbl, width="10", text=str(curw[13]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
+        lbl = Label(frame_tbl, width="10", text=str(curw[12]), font=("Tahoma", 10), padx=10, pady=5, bg=color_)
         lbl.grid(row=row_, column=9, padx=1, pady=1)
 
 
@@ -62,7 +107,6 @@ def startdata():
         lbl_message["height"] = "3"
         return 0
     write_modbus = modbus_write_array(result_arr)
-    #print(type(write_modbus))
     if isinstance(write_modbus, str):
             lbl_message["text"] = write_modbus
             lbl_message["bg"] = "red"
@@ -73,7 +117,6 @@ def startdata():
     for curw in result_arr:
         row_=row_+1
         curw[12]='1'
-        curw[13]='1'
         writeonerow(row_, curw, "lightblue")
     updatescroll(len(result_arr))
     lbl_message["text"] = u"Порезка окончена"
@@ -88,12 +131,11 @@ def updatescroll(i=1):
 
     frame_tbl.update_idletasks()  # Needed to make bbox info available.
     bbox = canvas.bbox(ALL)  # Get bounding box of canvas with Buttons.
-    # print('canvas.bbox(tk.ALL): {}'.format(bbox))
     LABEL_BG = "#ccc"  # Light grey.
     i += 2
-    ROWS, COLS = i, 10  # Size of grid.
+    ROWS, COLS = i, 11  # Size of grid.
     ROWS_DISP = 12  # Number of rows to display.
-    COLS_DISP = 10  # Number of columns to display.
+    COLS_DISP = 11  # Number of columns to display.
     # Define the scrollable region as entire canvas with only the desired
     # number of rows and columns displayed.
     w, h = bbox[2] - bbox[1], bbox[3] - bbox[1]
@@ -104,8 +146,10 @@ def writearrtogrid():
     result_arr.clear()
     add_left = '0'
     row_ = 1
+    qty_bar=0
     for curw in parserresult:
         row_ += 1
+        qty_bar+=1
         height_pr = curw[1]
         angleleft = curw[2]
         angleright=curw[3]
@@ -125,6 +169,7 @@ def writearrtogrid():
         else:
             realsize=str(int(curw[0]) - int(addleft) - int(addright))
         result_row=[]
+        result_row.clear()
         result_row.append(curw[0])#bar_length
         result_row.append(curw[2])#angle_left_grad
         result_row.append(curw[3])#angle_right_grad
@@ -133,12 +178,11 @@ def writearrtogrid():
         result_row.append(addright)#addright
         result_row.append(realsize)#realsize
         result_row.append(curw[8])#article_profile
-        result_row.append(curw[4])#qty_bar
+        result_row.append(str(qty_bar))#qty_bar
         result_row.append(curw[6])#bar_code
         result_row.append(curw[7])#bar_number
         result_row.append(curw[5])#bar_color
-        result_row.append('')#qty_cur
-        result_row.append('')#marker_end_cut
+        result_row.append('')
         result_arr.append(result_row)
         writeonerow(row_, result_row, "white")
     updatescroll(len(result_arr))
@@ -146,6 +190,7 @@ def writearrtogrid():
 
 
 def importdata():
+    clear_frame()
     hex_arr=[]
     str_text = ''
     hex_arr.clear()
@@ -193,7 +238,6 @@ def importdata():
         if res != 0:
             parserresult.append(res)
 
-
     writearrtogrid()
 
 
@@ -201,7 +245,9 @@ root = Tk()
 parserresult = []
 parserresult.clear()
 result_arr = []
+result_arr.clear()
 result_row = []
+result_row.clear()
 lbl_message = Label(root, text="", font=("Tahoma", 12), width="0", height="0", bg="white")
 lbl_message.grid(row=1, columnspan=4)
 lbl_message["text"] = u"Подключите файл для разбора"
@@ -248,47 +294,7 @@ canvas.configure(xscrollcommand=hsbar.set)
 # Create a frame on the canvas to contain the buttons.
 frame_tbl = Frame(canvas, bg="grey", bd=2)
 
-lbl = Label(frame_tbl, width="10", text="Длина", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=0, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Углы", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=1, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Высота", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=2, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Добавочные", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=3, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Реал. размер", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=4, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Артикуль", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=5, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Баркод", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=6, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Цвет", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=7, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Кол-во резов", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=8, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=0, column=9, padx=1, pady=1)
-
-lbl = Label(frame_tbl, width="10", text="bar_length", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=0, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="angle_left_grad\nangle_right_grad", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=1, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="height_profile", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=2, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Вычисляемое", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=3, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="real_size", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=4, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="article_profile", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=5, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="bar_code\n-bar_number", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=6, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="bar_color", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=7, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Кол-во резов", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=8, padx=1, pady=1)
-lbl = Label(frame_tbl, width="10", text="Выполнено", font=("Tahoma", 10), padx=10, pady=5, bg="lightgreen")
-lbl.grid(row=1, column=9, padx=1, pady=1)
+clear_frame()
 
 updatescroll(1)
 root.title(u"Раскрой пилы")
